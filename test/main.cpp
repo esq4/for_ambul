@@ -290,6 +290,50 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		PrintComError(e);
 	}
 
+    // для Ambul v_1.0.16.120	
+	// MOP,C,3	LPU_F033,C,17	PROFIL_M,N,2,0	
+	const char *_usl = strstr((LPCTSTR)strFileName,"usl");
+	if ( _usl == NULL ) {
+		try {
+			m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN MOP C(3)"; fprintf(flog,"\n ADD COLUMN MOP: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+		}
+		catch (_com_error e){
+			PrintComError(e);
+		}
+	}	  
+	try {
+		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN LPU_F033 C(17)"; fprintf(flog,"\n ADD COLUMN LPU_F033: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN PROFIL_M N(1,0)"; fprintf(flog,"\n ADD COLUMN PROFIL_M: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
+		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
+		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	if ( _usl == NULL ) {
+		try {
+			//	MOP Место обращения (посещения) Справочник V040 = 1
+			m_cRec = "UPDATE [" + strFileName + "]  SET MOP='1'"; cnn->Execute(m_cRec,NULL,1);
+		}
+		catch (_com_error e){
+			PrintComError(e);
+		}
+	}
+	// для Ambul v_1.0.16.120
+
+
 	try {
 		// Форма помощи:
 		// 2 - неотложная
