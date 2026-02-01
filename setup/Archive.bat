@@ -1,1 +1,1 @@
-COPY /b 7ZSD_LZMA.sfx + config.txt + Archive.7z start_forambul.exe
+COPY /b 7ZS2con.sfx + config.txt + Archive.7z start_forambul.exe
