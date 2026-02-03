@@ -121,9 +121,19 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	strFileName += fname;
 	strFolderName += fdisk;
 	strFolderName += fpath;
-	strFileNameUsl += fname;
-	strFileNameUsl += "_usl";
 	
+	strFileNameUsl += fname;
+	const char *_patt_test = strstr((LPCTSTR)strFileNameUsl,"pat-");
+	if ( _patt_test == NULL ) {
+		std::string f_usl =(LPCTSTR) strFileNameUsl;
+		f_usl.replace(0, 3, "pat_usl"); 
+		strFileNameUsl = _com_util::ConvertStringToBSTR(f_usl.c_str());
+	} else {
+		strFileNameUsl += "_usl";
+	}
+	fprintf(flog,strFileNameUsl);
+
+		
 	CoInitialize(NULL);
 	_ConnectionPtr cnn=NULL;
 	
@@ -292,15 +302,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
     // для Ambul v_1.0.16.120	
 	// MOP,C,3	LPU_F033,C,17	PROFIL_M,N,2,0	
-	const char *_usl = strstr((LPCTSTR)strFileName,"usl");
-	if ( _usl == NULL ) {
-		try {
-			m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN MOP C(3)"; fprintf(flog,"\n ADD COLUMN MOP: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
-		}
-		catch (_com_error e){
-			PrintComError(e);
-		}
-	}	  
+	try {
+		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN MOP C(3)"; fprintf(flog,"\n ADD COLUMN MOP: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
 	try {
 		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN LPU_F033 C(17)"; fprintf(flog,"\n ADD COLUMN LPU_F033: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
 	}
@@ -314,22 +321,34 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		PrintComError(e);
 	}
 	try {
-		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
-		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
-		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
-		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "ALTER TABLE [" + strFileNameUsl + "] ADD COLUMN LPU_F033 C(17)"; fprintf(flog,"\n ADD COLUMN LPU_F033: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
 	}
 	catch (_com_error e){
 		PrintComError(e);
 	}
-	if ( _usl == NULL ) {
-		try {
-			//	MOP Место обращения (посещения) Справочник V040 = 1
-			m_cRec = "UPDATE [" + strFileName + "]  SET MOP='1'"; cnn->Execute(m_cRec,NULL,1);
-		}
-		catch (_com_error e){
-			PrintComError(e);
-		}
+	try {
+		m_cRec = "ALTER TABLE [" + strFileNameUsl + "] ADD COLUMN PROFIL_M N(1,0)"; fprintf(flog,"\n ADD COLUMN PROFIL_M: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
+		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
+		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
+		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		//	MOP Место обращения (посещения) Справочник V040 = 1
+		m_cRec = "UPDATE [" + strFileName + "]  SET MOP='1'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
 	}
 	// для Ambul v_1.0.16.120
 
@@ -538,7 +557,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		}
 	}
 */		
-	fclose(flog);
+	
+    fclose(flog);
 	fclose(fmis);
 	CoUninitialize();
 	cnn->Close();
