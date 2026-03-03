@@ -1,5 +1,5 @@
 ﻿;!@Install@!UTF-8!
- Title="forAmbul v. 2.1.0.1"
+ Title="forAmbul v. 2.1.0.3"
  RunProgram="forambul.exe"
  ExtractTitle="Запуск forAmbul."
  ;!@InstallEnd@!

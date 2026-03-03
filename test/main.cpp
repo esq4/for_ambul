@@ -336,7 +336,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
 		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
 		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
-		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400002011' WHERE LEFT(AMBKARTA,1)='1'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400003082' WHERE LEFT(AMBKARTA,1)='2'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='3'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='0'"; cnn->Execute(m_cRec,NULL,1);
 		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
 		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
 	}
