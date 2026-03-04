@@ -336,12 +336,38 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
 		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
 		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
-		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400002011' WHERE LEFT(AMBKARTA,1)='1'"; cnn->Execute(m_cRec,NULL,1);
+
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400002011' WHERE (LEFT(AMBKARTA,1)='1') AND (PROFIL=)"; cnn->Execute(m_cRec,NULL,1);
 		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400003082' WHERE LEFT(AMBKARTA,1)='2'"; cnn->Execute(m_cRec,NULL,1);
 		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='3'"; cnn->Execute(m_cRec,NULL,1);
 		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='0'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+
+//			3	3	3	3	3	3		3	3	3	3	3	3	3
+//PROFIL	5	51	78	82	85	87		5	63	85	86	89	90	171
+//VIDPOM	11	11	11	11	11	11		13	13	13	13	13	13	13
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='3') AND ((PROFIL=5) OR (PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+
+//				2	2	2	2	2			2	2	2		2	2	
+//PROFIL		51	78	82	85	87			63	78	86		90	171	
+//VIDPOM		11	11	11	11	11			13	13	13		13	13	
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='2') AND ((PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+
+//				1	1	1	1	1			1		1		1	1
+//PROFIL		51	78	82	85	87			63		86		90	171
+//VIDPOM		11	11	11	11	11			13		13		13	13
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='1') AND ((PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
 		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
-		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET LPU_F033=''"; cnn->Execute(m_cRec,NULL,1);
 	}
 	catch (_com_error e){
 		PrintComError(e);
