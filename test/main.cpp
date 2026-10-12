@@ -420,6 +420,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 
 	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET POS_NEOTL=0"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+
+
+	try {
 		// Форма помощи:
 		// 2 - неотложная
 		// 3 - плановая
@@ -427,7 +435,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		m_cRec = "UPDATE [" + strFileName + "]  SET FOR_POM=3 WHERE !((FOR_POM=2) AND (AIM=3))"; cnn->Execute(m_cRec,NULL,1); 
 //m_cRec = "UPDATE " + strFileName + "  SET DOC_OMS='0'"; cnn->Execute(m_cRec,NULL,1); надо разобраться
 		m_cRec = "UPDATE [" + strFileName + "]  SET VID_TR='0'"; cnn->Execute(m_cRec,NULL,1);
-		m_cRec = "UPDATE [" + strFileName + "]  SET POS_NEOTL=0"; cnn->Execute(m_cRec,NULL,1);
 
 		// Цель:
 		// 2 - профилактическая
