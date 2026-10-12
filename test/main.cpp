@@ -121,9 +121,19 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	strFileName += fname;
 	strFolderName += fdisk;
 	strFolderName += fpath;
-	strFileNameUsl += fname;
-	strFileNameUsl += "_usl";
 	
+	strFileNameUsl += fname;
+	const char *_patt_test = strstr((LPCTSTR)strFileNameUsl,"pat-");
+	if ( _patt_test == NULL ) {
+		std::string f_usl =(LPCTSTR) strFileNameUsl;
+		f_usl.replace(0, 3, "pat_usl"); 
+		strFileNameUsl = _com_util::ConvertStringToBSTR(f_usl.c_str());
+	} else {
+		strFileNameUsl += "_usl";
+	}
+	fprintf(flog,strFileNameUsl);
+
+		
 	CoInitialize(NULL);
 	_ConnectionPtr cnn=NULL;
 	
@@ -292,15 +302,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
     // для Ambul v_1.0.16.120	
 	// MOP,C,3	LPU_F033,C,17	PROFIL_M,N,2,0	
-	const char *_usl = strstr((LPCTSTR)strFileName,"usl");
-	if ( _usl == NULL ) {
-		try {
-			m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN MOP C(3)"; fprintf(flog,"\n ADD COLUMN MOP: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
-		}
-		catch (_com_error e){
-			PrintComError(e);
-		}
-	}	  
+	try {
+		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN MOP C(3)"; fprintf(flog,"\n ADD COLUMN MOP: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
 	try {
 		m_cRec = "ALTER TABLE [" + strFileName + "] ADD COLUMN LPU_F033 C(17)"; fprintf(flog,"\n ADD COLUMN LPU_F033: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
 	}
@@ -314,22 +321,100 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		PrintComError(e);
 	}
 	try {
-		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
-		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
-		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
-		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400005012'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "ALTER TABLE [" + strFileNameUsl + "] ADD COLUMN LPU_F033 C(17)"; fprintf(flog,"\n ADD COLUMN LPU_F033: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
 	}
 	catch (_com_error e){
 		PrintComError(e);
 	}
-	if ( _usl == NULL ) {
-		try {
-			//	MOP Место обращения (посещения) Справочник V040 = 1
-			m_cRec = "UPDATE [" + strFileName + "]  SET MOP='1'"; cnn->Execute(m_cRec,NULL,1);
-		}
-		catch (_com_error e){
-			PrintComError(e);
-		}
+	try {
+		m_cRec = "ALTER TABLE [" + strFileNameUsl + "] ADD COLUMN PROFIL_M N(1,0)"; fprintf(flog,"\n ADD COLUMN PROFIL_M: "); cnn->Execute(m_cRec,NULL,1); fprintf(flog," OK");
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		//  LPU_F033 Уникальный номер структурного подразделения МО по данным ЕРМО. Справочник F033(ГБУЗ НСО "ДГКСП") = 54202601400005012
+		//	PROFIL_M Профиль медицинской помощи в соответствии со справочником M003 = 36
+		m_cRec = "UPDATE [" + strFileName + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400002011' WHERE (LEFT(AMBKARTA,1)='1')"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400003082' WHERE LEFT(AMBKARTA,1)='2'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='3'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET LPU_F033='54202601400004066' WHERE LEFT(AMBKARTA,1)='0'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=13"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+//			3	3	3	3	3	3		3	3	3	3	3	3	3
+//PROFIL	5	51	78	82	85	87		5	63	85	86	89	90	171
+//VIDPOM	11	11	11	11	11	11		13	13	13	13	13	13	13
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='3') AND ((PROFIL=5) OR (PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+//				2	2	2	2	2			2	2	2		2	2	
+//PROFIL		51	78	82	85	87			63	78	86		90	171	
+//VIDPOM		11	11	11	11	11			13	13	13		13	13	
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='2') AND ((PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+//				1	1	1	1	1			1		1		1	1
+//PROFIL		51	78	82	85	87			63		86		90	171
+//VIDPOM		11	11	11	11	11			13		13		13	13
+		m_cRec = "UPDATE [" + strFileName + "]  SET VIDPOM=11 WHERE (LEFT(AMBKARTA,1)='1') AND ((PROFIL=51) OR (PROFIL=78) OR (PROFIL=82) OR (PROFIL=85) OR (PROFIL=87))"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET PROFIL_M=36"; cnn->Execute(m_cRec,NULL,1); 
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		m_cRec = "UPDATE [" + strFileNameUsl + "]  SET LPU_F033=''"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
+	}
+	try {
+		//	MOP Место обращения (посещения) Справочник V040 = 1
+		m_cRec = "UPDATE [" + strFileName + "]  SET MOP='1'"; cnn->Execute(m_cRec,NULL,1);
+	}
+	catch (_com_error e){
+		PrintComError(e);
 	}
 	// для Ambul v_1.0.16.120
 
@@ -342,6 +427,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		m_cRec = "UPDATE [" + strFileName + "]  SET FOR_POM=3 WHERE !((FOR_POM=2) AND (AIM=3))"; cnn->Execute(m_cRec,NULL,1); 
 //m_cRec = "UPDATE " + strFileName + "  SET DOC_OMS='0'"; cnn->Execute(m_cRec,NULL,1); надо разобраться
 		m_cRec = "UPDATE [" + strFileName + "]  SET VID_TR='0'"; cnn->Execute(m_cRec,NULL,1);
+		m_cRec = "UPDATE [" + strFileName + "]  SET POS_NEOTL=0"; cnn->Execute(m_cRec,NULL,1);
 
 		// Цель:
 		// 2 - профилактическая
@@ -538,7 +624,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		}
 	}
 */		
-	fclose(flog);
+	
+    fclose(flog);
 	fclose(fmis);
 	CoUninitialize();
 	cnn->Close();
