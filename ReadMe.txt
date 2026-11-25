@@ -35,8 +35,14 @@ v. 2.0.1.2
 v. 2.0.1.3
 При неотложной цели AIM=3 устанавливается неотложная форма помощи FOR_POM=2
 
-v. 2.0.1.4 
+v. 2.0.1.4
 Причёска
 
-v. 2.0.1.5 
+v. 2.0.1.5
 SET POS_NEOTL=0
+
+v. 2.0.1.6
+--LPU_F033 WHERE LEFT(AMBKARTA,1)
+--PROFIL WHERE LEFT(AMBKARTA,1)
+--VIDPOM WHERE LEFT(AMBKARTA,1)
+
